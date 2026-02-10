@@ -56,6 +56,27 @@ export default function ExerciseDetail() {
                 const user = { id: "dev-user", user_metadata: { full_name: "Développeur" } };
                 setCurrentUser(user);
                 userId = user.id;
+
+                // Mock exercise data
+                setExercise({
+                    id,
+                    content: {
+                        question: "Quelle est la racine carrée de 144 ?",
+                        answer: "12",
+                        level: "6ème",
+                        topic: "Calcul",
+                        explanation: "La racine carrée d'un nombre est le nombre qui, multiplié par lui-même, donne ce nombre."
+                    }
+                });
+                setContent({
+                    question: "Quelle est la racine carrée de 144 ?",
+                    answer: "12",
+                    level: "6ème",
+                    topic: "Calcul",
+                    explanation: "La racine carrée d'un nombre est le nombre qui, multiplié par lui-même, donne ce nombre."
+                });
+                setLoading(false);
+                return;
             } else {
                 const { data: { user } } = await supabase.auth.getUser();
                 if (!user) return router.push("/auth/login");

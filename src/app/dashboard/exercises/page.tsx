@@ -35,6 +35,25 @@ export default function ExercisesPage() {
                     id: "dev-user",
                     user_metadata: { full_name: "Développeur" }
                 });
+                setExercises([
+                    {
+                        id: 1,
+                        content: { question: "Sachant que 2x + 5 = 15, quelle est la valeur de x ?", level: "6ème", topic: "Algèbre" },
+                        status: 'pending'
+                    },
+                    {
+                        id: 2,
+                        content: { question: "Calculez l'aire d'un carré de 4cm de côté.", level: "CM1", topic: "Géométrie" },
+                        status: 'validated'
+                    },
+                    {
+                        id: 3,
+                        content: { question: "1/2 + 1/4 = ?", level: "CM2", topic: "Fractions" },
+                        status: 'pending'
+                    }
+                ] as any);
+                setLoading(false);
+                return;
             } else {
                 const { data: { user } } = await supabase.auth.getUser();
                 setCurrentUser(user);

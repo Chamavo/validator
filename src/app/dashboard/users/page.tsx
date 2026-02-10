@@ -16,8 +16,37 @@ export default function UsersPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    const BYPASS_AUTH = true;
+
     const fetchProfiles = async () => {
         setLoading(true);
+        if (BYPASS_AUTH) {
+            setProfiles([
+                {
+                    id: "dev-user",
+                    full_name: "Développeur",
+                    role: 'admin',
+                    is_approved: true,
+                    created_at: new Date().toISOString()
+                },
+                {
+                    id: "user-1",
+                    full_name: "Jean Dupont",
+                    role: 'validator',
+                    is_approved: true,
+                    created_at: new Date(Date.now() - 86400000).toISOString()
+                },
+                {
+                    id: "user-2",
+                    full_name: "Marie Curie",
+                    role: 'validator',
+                    is_approved: false,
+                    created_at: new Date(Date.now() - 172800000).toISOString()
+                }
+            ]);
+            setLoading(false);
+            return;
+        }
         const { data, error: fetchError } = await supabase
             .from("profiles")
             .select("*")
@@ -36,6 +65,10 @@ export default function UsersPage() {
     }, []);
 
     const handleToggleApproval = async (id: string, currentStatus: boolean) => {
+        if (BYPASS_AUTH) {
+            setProfiles(profiles.map(p => p.id === id ? { ...p, is_approved: !currentStatus } : p));
+            return;
+        }
         const { error: updateError } = await supabase
             .from("profiles")
             .update({ is_approved: !currentStatus })
@@ -49,6 +82,10 @@ export default function UsersPage() {
     };
 
     const handleChangeRole = async (id: string, newRole: 'admin' | 'validator') => {
+        if (BYPASS_AUTH) {
+            setProfiles(profiles.map(p => p.id === id ? { ...p, role: newRole } : p));
+            return;
+        }
         const { error: updateError } = await supabase
             .from("profiles")
             .update({ role: newRole })
@@ -123,8 +160,8 @@ export default function UsersPage() {
                                 </td>
                                 <td className="px-6 py-4">
                                     <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${profile.is_approved
-                                            ? 'bg-green-100 text-green-700 border-green-200'
-                                            : 'bg-orange-100 text-orange-700 border-orange-200'
+                                        ? 'bg-green-100 text-green-700 border-green-200'
+                                        : 'bg-orange-100 text-orange-700 border-orange-200'
                                         }`}>
                                         {profile.is_approved ? 'Approuvé' : 'En attente'}
                                     </span>
@@ -136,8 +173,8 @@ export default function UsersPage() {
                                     <button
                                         onClick={() => handleToggleApproval(profile.id, profile.is_approved)}
                                         className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${profile.is_approved
-                                                ? 'text-red-500 hover:bg-red-50 border border-red-100'
-                                                : 'bg-primary text-white hover:bg-primary-hover shadow-sm'
+                                            ? 'text-red-500 hover:bg-red-50 border border-red-100'
+                                            : 'bg-primary text-white hover:bg-primary-hover shadow-sm'
                                             }`}
                                     >
                                         {profile.is_approved ? 'Désapprouver' : 'Approuver'}
