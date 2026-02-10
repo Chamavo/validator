@@ -153,8 +153,7 @@ export default function ExercisesPage() {
                                 <td className="px-6 py-4 text-right">
                                     <Link
                                         href={`/dashboard/exercises/${ex.id}`}
-                                        disabled={ex.lock && ex.lock.locked_by !== currentUser?.id}
-                                        className={`inline-flex items-center justify-center h-9 px-4 rounded-lg text-sm font-bold transition-all ${ex.lock && ex.lock.locked_by !== currentUser?.id
+                                                                               className={`inline-flex items-center justify-center h-9 px-4 rounded-lg text-sm font-bold transition-all ${ex.lock && ex.lock.locked_by !== currentUser?.id
                                                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                                                 : "bg-primary text-white hover:bg-primary-hover shadow-sm hover:shadow active:scale-[0.98]"
                                             }`}
