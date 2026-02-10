@@ -23,7 +23,14 @@ export default function ExerciseDetail() {
     const [error, setError] = useState<string | null>(null);
     const [currentUser, setCurrentUser] = useState<any>(null);
 
+    const BYPASS_AUTH = true;
+
     const acquireLock = useCallback(async (userId: string) => {
+        if (BYPASS_AUTH && userId === "dev-user") {
+            // Force a valid lock for dev mode if needed, or just return true
+            // Supabase might fail if "dev-user" isn't a valid UUID, but we can bypass the DB call
+            return true;
+        }
         const { error: lockError } = await supabase
             .from("locks")
             .upsert({ exercise_id: id, locked_by: userId }, { onConflict: 'exercise_id' });
@@ -33,22 +40,31 @@ export default function ExerciseDetail() {
             return false;
         }
         return true;
-    }, [id]);
+    }, [id, BYPASS_AUTH]);
 
     const releaseLock = useCallback(async () => {
+        if (BYPASS_AUTH) return; // Skip in dev mode to avoid errors
         if (id) {
             await supabase.from("locks").delete().eq("exercise_id", id);
         }
-    }, [id]);
+    }, [id, BYPASS_AUTH]);
 
     useEffect(() => {
         const fetchExercise = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return router.push("/auth/login");
-            setCurrentUser(user);
+            let userId = "";
+            if (BYPASS_AUTH) {
+                const user = { id: "dev-user", user_metadata: { full_name: "Développeur" } };
+                setCurrentUser(user);
+                userId = user.id;
+            } else {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return router.push("/auth/login");
+                setCurrentUser(user);
+                userId = user.id;
+            }
 
             // Try to acquire lock first
-            const lockSuccess = await acquireLock(user.id);
+            const lockSuccess = await acquireLock(userId);
             if (!lockSuccess) {
                 setError("Impossible de verrouiller l'exercice. Il est peut-être déjà utilisé.");
                 setLoading(false);

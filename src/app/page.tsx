@@ -10,8 +10,18 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  const BYPASS_AUTH = true;
+
   useEffect(() => {
     const checkUser = async () => {
+      if (BYPASS_AUTH) {
+        setUser({
+          id: "dev-user",
+          user_metadata: { full_name: "Développeur" }
+        });
+        setLoading(false);
+        return;
+      }
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
       setLoading(false);
